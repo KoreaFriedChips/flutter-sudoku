@@ -1,0 +1,80 @@
+{
+    "name": "Sudoku",
+    "short_name": "Sudoku",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#121212",
+    "theme_color": "#3880FF",
+    "description": "A fully fledged Sudoku game.",
+    "orientation": "portrait-primary",
+    "prefer_related_applications": false,
+    "icons": [
+        {
+            "src": "icons/Icon-72.png",
+            "sizes": "72x72",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-96.png",
+            "sizes": "96x96",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-128.png",
+            "sizes": "128x128",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-144.png",
+            "sizes": "144x144",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-152.png",
+            "sizes": "152x152",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-384.png",
+            "sizes": "384x384",
+            "type": "image/png"
+        },
+        {
+            "src": "icons/Icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "screenshots/Solved_Dark_324x648.png",
+            "type": "image/png",
+            "sizes": "324x648"
+        },
+        {
+            "src": "screenshots/Solving_Light_324x648.png",
+            "type": "image/png",
+            "sizes": "324x648"
+        },
+        {
+            "src": "screenshots/Choose_324x648.png",
+            "type": "image/png",
+            "sizes": "324x648"
+        },
+        {
+            "src": "screenshots/Result_324x648.png",
+            "type": "image/png",
+            "sizes": "324x648"
+        },
+        {
+            "src": "screenshots/Options_324x648.png",
+            "type": "image/png",
+            "sizes": "324x648"
+        }
+    ]
+}

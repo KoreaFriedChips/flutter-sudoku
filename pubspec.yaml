@@ -23,6 +23,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  
+  # timer
+  stop_watch_timer:
 
   # Sudoku Logic
   sudoku_solver_generator: ^2.1.0+1

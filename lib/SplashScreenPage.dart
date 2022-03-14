@@ -33,7 +33,7 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
       backgroundColor: Styles.primaryBackgroundColor,
       loaderColor: Styles.primaryColor,
       loadingText: Text(
-        'VarunS2002',
+        'QX Tech',
         style: TextStyle(color: Colors.grey),
       ),
     );

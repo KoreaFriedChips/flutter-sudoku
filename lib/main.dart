@@ -55,6 +55,8 @@ class HomePageState extends State<HomePage> {
   static String platform;
   static int curX, curY;
   static int prvX, prvY, prvV;
+  static int mistakes = 0;
+  bool lose = false;
 
   @override
   void initState() {
@@ -155,7 +157,26 @@ class HomePageState extends State<HomePage> {
 
   void checkResult() {
     try {
-      if (SudokuUtilities.isSolved(game)) {
+      if (lose) {
+        isButtonDisabled = !isButtonDisabled;
+        gameOver = true;
+        Timer(Duration(milliseconds: 500), () {
+          showAnimatedDialog<void>(
+              animationType: DialogTransitionType.fadeScale,
+              barrierDismissible: true,
+              duration: Duration(milliseconds: 350),
+              context: context,
+              builder: (_) => AlertLose()).whenComplete(() {
+            if (AlertLose.newGame) {
+              newGame();
+              AlertLose.newGame = false;
+            } else if (AlertLose.restartGame) {
+              restartGame();
+              AlertLose.restartGame = false;
+            }
+          });
+        });
+      } else if (SudokuUtilities.isSolved(game)) {
         isButtonDisabled = !isButtonDisabled;
         gameOver = true;
         Timer(Duration(milliseconds: 500), () {
@@ -224,6 +245,7 @@ class HomePageState extends State<HomePage> {
       isButtonDisabled =
           isButtonDisabled ? !isButtonDisabled : isButtonDisabled;
       gameOver = false;
+      mistakes = 0;
     });
   }
 
@@ -235,6 +257,7 @@ class HomePageState extends State<HomePage> {
       gameOver = false;
       hintUsed = false;
       prvV = null;
+      mistakes = 0;
     });
   }
 
@@ -305,8 +328,10 @@ class HomePageState extends State<HomePage> {
                 return buttonColor(k, i);
               else if (check(k, i))
                 return Styles.primaryColor;
-              else
+              else {
+                HapticFeedback.vibrate();
                 return Styles.secondaryColor;
+              }
             }),
             shape: MaterialStateProperty.all<OutlinedBorder>(
               RoundedRectangleBorder(
@@ -336,6 +361,12 @@ class HomePageState extends State<HomePage> {
     return buttonList;
   }
 
+  void incrementMistakes() {
+    setState(() {
+      mistakes++;
+    });
+  }
+
   Row oneRow() {
     return Row(
       children: createButtons(),
@@ -358,7 +389,7 @@ class HomePageState extends State<HomePage> {
       return false;
   }
 
-  void callback(int x, int y, int number) {
+  void callback(int x, int y, int number, bool undo) {
     setState(() {
       if (number == null) {
         return;
@@ -370,7 +401,15 @@ class HomePageState extends State<HomePage> {
         prvY = y;
         prvV = game[x][y];
         game[x][y] = number;
-        checkResult();
+        if (!undo) {
+          if (!check(x, y)) {
+            mistakes++;
+            if (mistakes == 3) {
+              lose = true;
+            }
+          }
+          checkResult();
+        }
       }
     });
   }
@@ -556,6 +595,11 @@ class HomePageState extends State<HomePage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                // put mistake counter and timer up here
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [Text('$mistakes' + "/3")],
+                ),
                 Column(children: createRows()),
                 SizedBox(
                   height: 35,
@@ -581,7 +625,7 @@ class HomePageState extends State<HomePage> {
                         ),
                         onPressed: () {
                           //print(prvV);
-                          callback(prvX, prvY, prvV);
+                          callback(prvX, prvY, prvV, true);
                         },
                         style: TextButton.styleFrom(
                           minimumSize: Size.zero,
@@ -605,7 +649,7 @@ class HomePageState extends State<HomePage> {
                           ],
                         ),
                         onPressed: () {
-                          callback(curX, curY, 0);
+                          callback(curX, curY, 0, false);
                           //print(prvV);
                         },
                         style: TextButton.styleFrom(
@@ -680,7 +724,7 @@ class HomePageState extends State<HomePage> {
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
                         onPressed: () {
-                          callback(curX, curY, 1);
+                          callback(curX, curY, 1, false);
                         },
                       ),
                       TextButton(
@@ -695,7 +739,7 @@ class HomePageState extends State<HomePage> {
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
                         onPressed: () {
-                          callback(curX, curY, 2);
+                          callback(curX, curY, 2, false);
                         },
                       ),
                       TextButton(
@@ -710,7 +754,7 @@ class HomePageState extends State<HomePage> {
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
                         onPressed: () {
-                          callback(curX, curY, 3);
+                          callback(curX, curY, 3, false);
                         },
                       ),
                       TextButton(
@@ -725,7 +769,7 @@ class HomePageState extends State<HomePage> {
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
                         onPressed: () {
-                          callback(curX, curY, 4);
+                          callback(curX, curY, 4, false);
                         },
                       ),
                       TextButton(
@@ -740,7 +784,7 @@ class HomePageState extends State<HomePage> {
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
                         onPressed: () {
-                          callback(curX, curY, 5);
+                          callback(curX, curY, 5, false);
                         },
                       ),
                       TextButton(
@@ -755,7 +799,7 @@ class HomePageState extends State<HomePage> {
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
                         onPressed: () {
-                          callback(curX, curY, 6);
+                          callback(curX, curY, 6, false);
                         },
                       ),
                       TextButton(
@@ -770,7 +814,7 @@ class HomePageState extends State<HomePage> {
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
                         onPressed: () {
-                          callback(curX, curY, 7);
+                          callback(curX, curY, 7, false);
                         },
                       ),
                       TextButton(
@@ -785,7 +829,7 @@ class HomePageState extends State<HomePage> {
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
                         onPressed: () {
-                          callback(curX, curY, 8);
+                          callback(curX, curY, 8, false);
                         },
                       ),
                       TextButton(
@@ -800,7 +844,7 @@ class HomePageState extends State<HomePage> {
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
                         onPressed: () {
-                          callback(curX, curY, 9);
+                          callback(curX, curY, 9, false);
                         },
                       ),
                     ],

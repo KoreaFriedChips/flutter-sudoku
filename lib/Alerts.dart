@@ -370,7 +370,7 @@ class AlertAbout extends StatelessWidget {
                   await launch(AlertAbout.authorURL);
                 },
                 child: Text(
-                  'Alex Xu',
+                  'Alex Xu & Edison Qu',
                   style: TextStyle(
                       color: Styles.primaryColor,
                       fontFamily: 'roboto',

@@ -10,6 +10,7 @@ import 'Styles.dart';
 import 'Alerts.dart';
 import 'SplashScreenPage.dart';
 import 'my_flutter_app_icons.dart';
+import 'package:stop_watch_timer/stop_watch_timer.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -57,6 +58,14 @@ class HomePageState extends State<HomePage> {
   static int prvX, prvY, prvV;
   static int mistakes = 0;
   bool lose = false;
+  final StopWatchTimer time = StopWatchTimer();
+  static String displayTime;
+
+  @override
+  void dispose() {
+    super.dispose();
+    time.dispose();
+  }
 
   @override
   void initState() {
@@ -109,6 +118,7 @@ class HomePageState extends State<HomePage> {
 
   void changeTheme(String mode) {
     setState(() {
+      time.onExecute.add(StopWatchExecute.stop);
       if (currentTheme == 'light') {
         if (mode == 'switch') {
           Styles.primaryBackgroundColor = Styles.darkGrey;
@@ -158,6 +168,7 @@ class HomePageState extends State<HomePage> {
   void checkResult() {
     try {
       if (lose) {
+        time.onExecute.add(StopWatchExecute.stop);
         isButtonDisabled = !isButtonDisabled;
         gameOver = true;
         Timer(Duration(milliseconds: 500), () {
@@ -177,6 +188,7 @@ class HomePageState extends State<HomePage> {
           });
         });
       } else if (SudokuUtilities.isSolved(game)) {
+        time.onExecute.add(StopWatchExecute.stop);
         isButtonDisabled = !isButtonDisabled;
         gameOver = true;
         Timer(Duration(milliseconds: 500), () {
@@ -218,6 +230,8 @@ class HomePageState extends State<HomePage> {
   }
 
   void setGame(int mode, [String difficulty = 'easy']) {
+    time.onExecute.add(StopWatchExecute.reset);
+    time.onExecute.add(StopWatchExecute.start);
     if (mode == 1) {
       game = new List.generate(9, (i) => [0, 0, 0, 0, 0, 0, 0, 0, 0]);
       gameCopy = SudokuUtilities.copySudoku(game);
@@ -237,6 +251,7 @@ class HomePageState extends State<HomePage> {
           !isButtonDisabled ? !isButtonDisabled : isButtonDisabled;
       gameOver = true;
     });
+    time.onExecute.add(StopWatchExecute.stop);
   }
 
   void newGame([String difficulty = 'easy']) {
@@ -245,7 +260,10 @@ class HomePageState extends State<HomePage> {
       isButtonDisabled =
           isButtonDisabled ? !isButtonDisabled : isButtonDisabled;
       gameOver = false;
+      prvV = null;
       mistakes = 0;
+      time.onExecute.add(StopWatchExecute.reset);
+      time.onExecute.add(StopWatchExecute.start);
     });
   }
 
@@ -258,6 +276,8 @@ class HomePageState extends State<HomePage> {
       hintUsed = false;
       prvV = null;
       mistakes = 0;
+      time.onExecute.add(StopWatchExecute.reset);
+      time.onExecute.add(StopWatchExecute.start);
     });
   }
 
@@ -598,7 +618,32 @@ class HomePageState extends State<HomePage> {
                 // put mistake counter and timer up here
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [Text('$mistakes' + "/3")],
+                  children: [
+                    Text(
+                      "Mistakes: " + '$mistakes' + "/3",
+                      style: TextStyle(
+                        color: currentTheme == 'dark'
+                            ? Colors.white
+                            : Colors.black,
+                      ),
+                    ),
+                    StreamBuilder<int>(
+                        stream: time.rawTime,
+                        initialData: time.rawTime.value,
+                        builder: (context, snap) {
+                          final value = snap.data;
+                          displayTime = StopWatchTimer.getDisplayTime(value,
+                              hours: false, milliSecond: false);
+                          return Text(
+                            displayTime,
+                            style: TextStyle(
+                              color: currentTheme == 'dark'
+                                  ? Colors.white
+                                  : Colors.black,
+                            ),
+                          );
+                        }),
+                  ],
                 ),
                 Column(children: createRows()),
                 SizedBox(

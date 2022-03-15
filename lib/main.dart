@@ -179,7 +179,7 @@ class HomePageState extends State<HomePage> {
               context: context,
               builder: (_) => AlertLose()).whenComplete(() {
             if (AlertLose.newGame) {
-              newGame();
+              newGame(currentDifficultyLevel);
               AlertLose.newGame = false;
             } else if (AlertLose.restartGame) {
               restartGame();
@@ -199,7 +199,7 @@ class HomePageState extends State<HomePage> {
               context: context,
               builder: (_) => AlertGameOver()).whenComplete(() {
             if (AlertGameOver.newGame) {
-              newGame();
+              newGame(currentDifficultyLevel);
               AlertGameOver.newGame = false;
             } else if (AlertGameOver.restartGame) {
               restartGame();
@@ -213,15 +213,15 @@ class HomePageState extends State<HomePage> {
     }
   }
 
-  static List<List<List<int>>> getNewGame([String difficulty = 'easy']) {
+  static List<List<List<int>>> getNewGame([String difficulty = 'Easy']) {
     int emptySquares;
     if (difficulty == 'test')
       emptySquares = 2;
-    else if (difficulty == 'beginner')
+    else if (difficulty == 'Beginner')
       emptySquares = 18;
-    else if (difficulty == 'easy')
+    else if (difficulty == 'Easy')
       emptySquares = 27;
-    else if (difficulty == 'medium')
+    else if (difficulty == 'Medium')
       emptySquares = 36;
     else
       emptySquares = 54;
@@ -229,7 +229,7 @@ class HomePageState extends State<HomePage> {
     return [generator.newSudoku, generator.newSudokuSolved];
   }
 
-  void setGame(int mode, [String difficulty = 'easy']) {
+  void setGame(int mode, [String difficulty = 'Easy']) {
     time.onExecute.add(StopWatchExecute.reset);
     time.onExecute.add(StopWatchExecute.start);
     if (mode == 1) {
@@ -254,14 +254,17 @@ class HomePageState extends State<HomePage> {
     time.onExecute.add(StopWatchExecute.stop);
   }
 
-  void newGame([String difficulty = 'easy']) {
+  void newGame([String difficulty = 'Easy']) {
     setState(() {
       setGame(2, difficulty);
       isButtonDisabled =
           isButtonDisabled ? !isButtonDisabled : isButtonDisabled;
       gameOver = false;
       prvV = null;
+      curX = null;
+      curY = null;
       mistakes = 0;
+      lose = false;
       time.onExecute.add(StopWatchExecute.reset);
       time.onExecute.add(StopWatchExecute.start);
     });
@@ -275,7 +278,10 @@ class HomePageState extends State<HomePage> {
       gameOver = false;
       hintUsed = false;
       prvV = null;
+      curX = null;
+      curY = null;
       mistakes = 0;
+      lose = false;
       time.onExecute.add(StopWatchExecute.reset);
       time.onExecute.add(StopWatchExecute.start);
     });
@@ -411,7 +417,7 @@ class HomePageState extends State<HomePage> {
 
   void callback(int x, int y, int number, bool undo) {
     setState(() {
-      if (number == null) {
+      if (number == null || x == null || y == null) {
         return;
       } else if (number == 0) {
         prvV = game[x][y];
@@ -615,10 +621,18 @@ class HomePageState extends State<HomePage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // put mistake counter and timer up here
+                // put difficulty, mistake counter and timer up here
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
+                    Text(
+                      '$currentDifficultyLevel',
+                      style: TextStyle(
+                        color: currentTheme == 'dark'
+                            ? Colors.white
+                            : Colors.black,
+                      ),
+                    ),
                     Text(
                       "Mistakes: " + '$mistakes' + "/3",
                       style: TextStyle(
@@ -703,27 +717,27 @@ class HomePageState extends State<HomePage> {
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
                       ),
-                      TextButton(
-                        child: Column(
-                          children: [
-                            Tab(
-                              icon: Icon(
-                                MyFlutterApp.pencil_neg,
-                                color: Styles.primaryColor,
-                              ),
-                              child: Text(
-                                'Notes',
-                                style: TextStyle(color: Styles.primaryColor),
-                              ),
-                            ),
-                          ],
-                        ),
-                        style: TextButton.styleFrom(
-                          minimumSize: Size.zero,
-                          padding: EdgeInsets.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
-                      ),
+                      // TextButton(
+                      //   child: Column(
+                      //     children: [
+                      //       Tab(
+                      //         icon: Icon(
+                      //           MyFlutterApp.pencil_neg,
+                      //           color: Styles.primaryColor,
+                      //         ),
+                      //         child: Text(
+                      //           'Notes',
+                      //           style: TextStyle(color: Styles.primaryColor),
+                      //         ),
+                      //       ),
+                      //     ],
+                      //   ),
+                      //   style: TextButton.styleFrom(
+                      //     minimumSize: Size.zero,
+                      //     padding: EdgeInsets.zero,
+                      //     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      //   ),
+                      // ),
                       TextButton(
                         child: Column(
                           children: [
@@ -903,7 +917,7 @@ class HomePageState extends State<HomePage> {
           foregroundColor: Styles.primaryBackgroundColor,
           backgroundColor: Styles.primaryColor,
           onPressed: () => showOptionModalSheet(context),
-          child: Icon(Icons.menu_rounded),
+          child: Icon(Icons.settings_outlined),
         ),
       ),
     );

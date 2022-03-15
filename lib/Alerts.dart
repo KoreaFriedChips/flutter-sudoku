@@ -114,10 +114,10 @@ class AlertDifficultyState extends StatefulWidget {
 class AlertDifficulty extends State<AlertDifficultyState> {
   static String difficulty;
   static final List<String> difficulties = [
-    'beginner',
-    'easy',
-    'medium',
-    'hard'
+    'Beginner',
+    'Easy',
+    'Medium',
+    'Hard'
   ];
   String currentDifficultyLevel;
 

@@ -11,15 +11,6 @@ import 'Alerts.dart';
 import 'SplashScreenPage.dart';
 import 'my_flutter_app_icons.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
-import 'dart:core';
-
-//Google Admob
-import 'package:google_mobile_ads/google_mobile_ads.dart';
-
-extension StringCasingExtension on String {
-  String toCapitalized() => length > 0 ?'${this[0].toUpperCase()}${substring(1).toLowerCase()}':'';
-  String toTitleCase() => replaceAll(RegExp(' +'), ' ').split(' ').map((str) => str.toCapitalized()).join(' ');
-}
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -127,6 +118,7 @@ class HomePageState extends State<HomePage> {
 
   void changeTheme(String mode) {
     setState(() {
+      time.onExecute.add(StopWatchExecute.stop);
       if (currentTheme == 'light') {
         if (mode == 'switch') {
           Styles.primaryBackgroundColor = Styles.darkGrey;
@@ -187,7 +179,7 @@ class HomePageState extends State<HomePage> {
               context: context,
               builder: (_) => AlertLose()).whenComplete(() {
             if (AlertLose.newGame) {
-              newGame(currentDifficultyLevel);
+              newGame();
               AlertLose.newGame = false;
             } else if (AlertLose.restartGame) {
               restartGame();
@@ -207,7 +199,7 @@ class HomePageState extends State<HomePage> {
               context: context,
               builder: (_) => AlertGameOver()).whenComplete(() {
             if (AlertGameOver.newGame) {
-              newGame(currentDifficultyLevel);
+              newGame();
               AlertGameOver.newGame = false;
             } else if (AlertGameOver.restartGame) {
               restartGame();
@@ -221,15 +213,15 @@ class HomePageState extends State<HomePage> {
     }
   }
 
-  static List<List<List<int>>> getNewGame([String difficulty = 'Easy']) {
+  static List<List<List<int>>> getNewGame([String difficulty = 'easy']) {
     int emptySquares;
     if (difficulty == 'test')
       emptySquares = 2;
-    else if (difficulty == 'Beginner')
+    else if (difficulty == 'beginner')
       emptySquares = 18;
-    else if (difficulty == 'Easy')
+    else if (difficulty == 'easy')
       emptySquares = 27;
-    else if (difficulty == 'Medium')
+    else if (difficulty == 'medium')
       emptySquares = 36;
     else
       emptySquares = 54;
@@ -237,7 +229,7 @@ class HomePageState extends State<HomePage> {
     return [generator.newSudoku, generator.newSudokuSolved];
   }
 
-  void setGame(int mode, [String difficulty = 'Easy']) {
+  void setGame(int mode, [String difficulty = 'easy']) {
     time.onExecute.add(StopWatchExecute.reset);
     time.onExecute.add(StopWatchExecute.start);
     if (mode == 1) {
@@ -254,8 +246,6 @@ class HomePageState extends State<HomePage> {
 
   void showSolution() {
     setState(() {
-      curX = null;
-      curY = null;
       game = SudokuUtilities.copySudoku(gameSolved);
       isButtonDisabled =
           !isButtonDisabled ? !isButtonDisabled : isButtonDisabled;
@@ -264,17 +254,14 @@ class HomePageState extends State<HomePage> {
     time.onExecute.add(StopWatchExecute.stop);
   }
 
-  void newGame([String difficulty = 'Easy']) {
+  void newGame([String difficulty = 'easy']) {
     setState(() {
       setGame(2, difficulty);
       isButtonDisabled =
           isButtonDisabled ? !isButtonDisabled : isButtonDisabled;
       gameOver = false;
       prvV = null;
-      curX = null;
-      curY = null;
       mistakes = 0;
-      lose = false;
       time.onExecute.add(StopWatchExecute.reset);
       time.onExecute.add(StopWatchExecute.start);
     });
@@ -288,37 +275,21 @@ class HomePageState extends State<HomePage> {
       gameOver = false;
       hintUsed = false;
       prvV = null;
-      curX = null;
-      curY = null;
       mistakes = 0;
-      lose = false;
       time.onExecute.add(StopWatchExecute.reset);
       time.onExecute.add(StopWatchExecute.start);
     });
   }
 
   Color buttonColor(int k, int i) {
-    if (curX == k && curY == i) {
-      return Styles.white;
-    }
     Color color;
-    int x, y;
-    if (curX != null && curY != null) {
-      x = curX - curX.remainder(3) + 1;
-      y = curY - curY.remainder(3) + 1;
-      if ([x - 1, x, x + 1].contains(k) && [y - 1, y, y + 1].contains(i))
-        return Styles.grey[100];
-    }
-    if (([curX].contains(k) && [0, 1, 2, 3, 4, 5, 6, 7, 8].contains(i)) ||
-        ([curY].contains(i) && [0, 1, 2, 3, 4, 5, 6, 7, 8].contains(k))) {
-      color = Styles.grey[100];
-    } else if (([0, 1, 2].contains(k) && [3, 4, 5].contains(i)) ||
+    if (([0, 1, 2].contains(k) && [3, 4, 5].contains(i)) ||
         ([3, 4, 5].contains(k) && [0, 1, 2, 6, 7, 8].contains(i)) ||
         ([6, 7, 8].contains(k) && [3, 4, 5].contains(i))) {
       if (Styles.primaryBackgroundColor == Styles.darkGrey) {
-        color = Styles.grey[300];
+        color = Styles.grey;
       } else {
-        color = Colors.grey[400];
+        color = Colors.grey[300];
       }
     } else {
       color = Styles.primaryBackgroundColor;
@@ -360,10 +331,8 @@ class HomePageState extends State<HomePage> {
           onPressed: isButtonDisabled || gameCopy[k][i] != 0
               ? null
               : () {
-                  setState(() {
-                    curX = k;
-                    curY = i;
-                  });
+                  curX = k;
+                  curY = i;
                 },
           style: ButtonStyle(
             backgroundColor:
@@ -377,11 +346,11 @@ class HomePageState extends State<HomePage> {
               }
               if (game[k][i] == 0)
                 return buttonColor(k, i);
-              else if (!check(k, i)) {
+              else if (check(k, i))
+                return Styles.primaryColor;
+              else {
                 HapticFeedback.vibrate();
                 return Styles.secondaryColor;
-              } else {
-                return Styles.primaryColor;
               }
             }),
             shape: MaterialStateProperty.all<OutlinedBorder>(
@@ -400,7 +369,7 @@ class HomePageState extends State<HomePage> {
           child: Text(
             game[k][i] != 0 ? game[k][i].toString() : ' ',
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            style: TextStyle(fontSize: 16),
           ),
         ),
       );
@@ -442,7 +411,7 @@ class HomePageState extends State<HomePage> {
 
   void callback(int x, int y, int number, bool undo) {
     setState(() {
-      if (number == null || x == null || y == null) {
+      if (number == null) {
         return;
       } else if (number == 0) {
         prvV = game[x][y];
@@ -466,7 +435,7 @@ class HomePageState extends State<HomePage> {
   }
 
   // pencil / notes
-  // work in progress, still need to think about this one.
+  //
 
   // ** disable after 1 use
   void hint() {
@@ -646,18 +615,10 @@ class HomePageState extends State<HomePage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // put difficulty, mistake counter and timer up here
+                // put mistake counter and timer up here
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    Text(
-                      '$currentDifficultyLevel'.toCapitalized(),
-                      style: TextStyle(
-                        color: currentTheme == 'dark'
-                            ? Colors.white
-                            : Colors.black,
-                      ),
-                    ),
                     Text(
                       "Mistakes: " + '$mistakes' + "/3",
                       style: TextStyle(
@@ -742,27 +703,27 @@ class HomePageState extends State<HomePage> {
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
                       ),
-                      // TextButton(
-                      //   child: Column(
-                      //     children: [
-                      //       Tab(
-                      //         icon: Icon(
-                      //           MyFlutterApp.pencil_neg,
-                      //           color: Styles.primaryColor,
-                      //         ),
-                      //         child: Text(
-                      //           'Notes',
-                      //           style: TextStyle(color: Styles.primaryColor),
-                      //         ),
-                      //       ),
-                      //     ],
-                      //   ),
-                      //   style: TextButton.styleFrom(
-                      //     minimumSize: Size.zero,
-                      //     padding: EdgeInsets.zero,
-                      //     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      //   ),
-                      // ),
+                      TextButton(
+                        child: Column(
+                          children: [
+                            Tab(
+                              icon: Icon(
+                                MyFlutterApp.pencil_neg,
+                                color: Styles.primaryColor,
+                              ),
+                              child: Text(
+                                'Notes',
+                                style: TextStyle(color: Styles.primaryColor),
+                              ),
+                            ),
+                          ],
+                        ),
+                        style: TextButton.styleFrom(
+                          minimumSize: Size.zero,
+                          padding: EdgeInsets.zero,
+                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        ),
+                      ),
                       TextButton(
                         child: Column(
                           children: [
@@ -942,7 +903,7 @@ class HomePageState extends State<HomePage> {
           foregroundColor: Styles.primaryBackgroundColor,
           backgroundColor: Styles.primaryColor,
           onPressed: () => showOptionModalSheet(context),
-          child: Icon(Icons.settings_outlined),
+          child: Icon(Icons.menu_rounded),
         ),
       ),
     );

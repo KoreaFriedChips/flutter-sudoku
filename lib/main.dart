@@ -21,7 +21,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  static final String versionNumber = "1.0";
+  static final String versionNumber = "0.05";
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

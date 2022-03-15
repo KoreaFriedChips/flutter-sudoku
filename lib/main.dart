@@ -12,6 +12,14 @@ import 'SplashScreenPage.dart';
 import 'my_flutter_app_icons.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 
+//Google Admob
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+
+extension StringCasingExtension on String {
+  String toCapitalized() => length > 0 ?'${this[0].toUpperCase()}${substring(1).toLowerCase()}':'';
+  String toTitleCase() => replaceAll(RegExp(' +'), ' ').split(' ').map((str) => str.toCapitalized()).join(' ');
+}
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations(
@@ -626,7 +634,7 @@ class HomePageState extends State<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Text(
-                      '$currentDifficultyLevel',
+                      '$currentDifficultyLevel'.toCapitalized(),
                       style: TextStyle(
                         color: currentTheme == 'dark'
                             ? Colors.white

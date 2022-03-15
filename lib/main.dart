@@ -292,11 +292,11 @@ class HomePageState extends State<HomePage> {
     if (([0, 1, 2].contains(k) && [3, 4, 5].contains(i)) ||
         ([3, 4, 5].contains(k) && [0, 1, 2, 6, 7, 8].contains(i)) ||
         ([6, 7, 8].contains(k) && [3, 4, 5].contains(i))) {
-      if (Styles.primaryBackgroundColor == Styles.darkGrey) {
-        color = Styles.grey;
-      } else {
-        color = Colors.grey[300];
-      }
+      // if (Styles.primaryBackgroundColor == Styles.darkGrey) {
+      //   color = Styles.grey;
+      // } else {
+      //   color = Colors.grey[300];
+      // }
     } else {
       color = Styles.primaryBackgroundColor;
     }

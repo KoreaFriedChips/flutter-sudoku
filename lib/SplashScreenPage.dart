@@ -29,12 +29,12 @@ class _SplashScreenPageState extends State<SplashScreenPage> {
             color: Styles.foregroundColor),
       ),
       image: new Image.asset('assets/icon/icon_foreground.png'),
-      photoSize: 50,
-      backgroundColor: Styles.primaryBackgroundColor,
+      photoSize: 70,
+      backgroundColor: Styles.ionicCyan[0],
       loaderColor: Styles.primaryColor,
       loadingText: Text(
         'QX Tech',
-        style: TextStyle(color: Colors.grey),
+        style: TextStyle(color: Colors.black),
       ),
     );
   }

@@ -73,7 +73,7 @@ class HomePageState extends State<HomePage> {
     super.initState();
     getPrefs().whenComplete(() {
       if (currentDifficultyLevel == null) {
-        currentDifficultyLevel = 'easy';
+        currentDifficultyLevel = 'Easy';
         setPrefs('currentDifficultyLevel');
       }
       if (currentTheme == null) {
@@ -299,7 +299,7 @@ class HomePageState extends State<HomePage> {
       x = curX - curX.remainder(3) + 1;
       y = curY - curY.remainder(3) + 1;
       if ([x - 1, x, x + 1].contains(k) && [y - 1, y, y + 1].contains(i))
-        return Styles.grey[100];
+        return Styles.grey[200];
     }
     if (([curX].contains(k) && [0, 1, 2, 3, 4, 5, 6, 7, 8].contains(i)) ||
         ([curY].contains(i) && [0, 1, 2, 3, 4, 5, 6, 7, 8].contains(k))) {

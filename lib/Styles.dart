@@ -45,6 +45,7 @@ class Styles {
 
   // 3DC2FF
   static MaterialColor ionicCyan = MaterialColor(4282237695, {
+    0: Color(0xffb4e4e8),
     50: Color(0xff94ddff),
     100: Color(0xff8bdaff),
     200: Color(0xff77d4ff),

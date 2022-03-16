@@ -1,9 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:sudoku/main.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'Styles.dart';
-import 'main.dart';
+import 'main.dart' as main;
 
 class AlertGameOver extends StatelessWidget {
   static bool newGame = false;
@@ -276,6 +277,8 @@ class AlertAbout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String theme = main.HomePageState.currentTheme;
+
     return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       backgroundColor: Styles.secondaryBackgroundColor,
@@ -293,10 +296,16 @@ class AlertAbout extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('assets/icon/icon_round.png',
-                  height: 48.0, width: 48.0, fit: BoxFit.contain),
+              Image.asset(
+                theme == 'dark'
+                    ? 'assets/icon/qxTechInvertedTransparent.png'
+                    : 'assets/icon/qxTech.png',
+                height: 60.0,
+                width: 60.0,
+                fit: BoxFit.contain,
+              ),
               Text(
-                '   Sudoku',
+                '   QX Tech',
                 style: TextStyle(
                     color: Styles.foregroundColor,
                     fontFamily: 'roboto',
@@ -375,35 +384,6 @@ class AlertAbout extends StatelessWidget {
                       fontSize: 15),
                 ),
               )
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                '                ',
-                style: TextStyle(
-                    color: Styles.foregroundColor,
-                    fontFamily: 'roboto',
-                    fontSize: 15),
-              ),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              InkWell(
-                // onTap: () async {
-                //   await launch(AlertAbout.sourceURL);
-                // },
-                child: Text(
-                  'Source Code',
-                  style: TextStyle(
-                      color: Styles.primaryColor,
-                      fontFamily: 'roboto',
-                      fontSize: 15),
-                ),
-              ),
             ],
           ),
         ],

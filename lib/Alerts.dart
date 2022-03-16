@@ -268,13 +268,11 @@ class AlertAccentColors extends State<AlertAccentColorsState> {
 }
 
 class AlertAbout extends StatelessWidget {
-  static const String authorURL = "https://www.github.com/VarunS2002/";
-  static const String releasesURL =
-      "https://github.com/VarunS2002/Flutter-Sudoku/releases/";
-  static const String sourceURL =
-      "https://github.com/VarunS2002/Flutter-Sudoku/";
-  static const String licenseURL =
-      "https://github.com/VarunS2002/Flutter-Sudoku/blob/master/LICENSE";
+  // links for hyperlink feature
+  // static const String authorURL = ;
+  // static const String releasesURL = ;
+  // static const String sourceURL = ;
+  // static const String licenseURL = ;
 
   @override
   Widget build(BuildContext context) {
@@ -330,9 +328,9 @@ class AlertAbout extends StatelessWidget {
                     fontSize: 15),
               ),
               InkWell(
-                onTap: () async {
-                  await launch(AlertAbout.releasesURL);
-                },
+                // onTap: () async {
+                //   await launch(AlertAbout.releasesURL);
+                // },
                 child: Text(
                   MyApp.versionNumber + ' ',
                   style: TextStyle(
@@ -366,9 +364,9 @@ class AlertAbout extends StatelessWidget {
                     fontSize: 15),
               ),
               InkWell(
-                onTap: () async {
-                  await launch(AlertAbout.authorURL);
-                },
+                // onTap: () async {
+                //   await launch(AlertAbout.authorURL);
+                // },
                 child: Text(
                   'Alex Xu & Edison Qu',
                   style: TextStyle(
@@ -395,9 +393,9 @@ class AlertAbout extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               InkWell(
-                onTap: () async {
-                  await launch(AlertAbout.sourceURL);
-                },
+                // onTap: () async {
+                //   await launch(AlertAbout.sourceURL);
+                // },
                 child: Text(
                   'Source Code',
                   style: TextStyle(

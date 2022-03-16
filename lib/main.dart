@@ -13,14 +13,6 @@ import 'my_flutter_app_icons.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'dart:core';
 
-//Google Admob
-import 'package:google_mobile_ads/google_mobile_ads.dart';
-
-extension StringCasingExtension on String {
-  String toCapitalized() => length > 0 ?'${this[0].toUpperCase()}${substring(1).toLowerCase()}':'';
-  String toTitleCase() => replaceAll(RegExp(' +'), ' ').split(' ').map((str) => str.toCapitalized()).join(' ');
-}
-
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations(
@@ -345,7 +337,7 @@ class HomePageState extends State<HomePage> {
       firstRun = false;
     }
     MaterialColor emptyColor;
-    if (gameOver) {
+    if (gameOver && !lose) {
       emptyColor = Styles.primaryColor;
     } else {
       emptyColor = Styles.secondaryColor;
@@ -375,9 +367,9 @@ class HomePageState extends State<HomePage> {
                     ? emptyColor
                     : Styles.foregroundColor;
               }
-              if (game[k][i] == 0)
+              if (game[k][i] == 0) {
                 return buttonColor(k, i);
-              else if (!check(k, i)) {
+              } else if (!check(k, i)) {
                 HapticFeedback.vibrate();
                 return Styles.secondaryColor;
               } else {
@@ -410,12 +402,6 @@ class HomePageState extends State<HomePage> {
       timesCalled = 0;
     }
     return buttonList;
-  }
-
-  void incrementMistakes() {
-    setState(() {
-      mistakes++;
-    });
   }
 
   Row oneRow() {
@@ -651,7 +637,7 @@ class HomePageState extends State<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Text(
-                      '$currentDifficultyLevel'.toCapitalized(),
+                      '$currentDifficultyLevel',
                       style: TextStyle(
                         color: currentTheme == 'dark'
                             ? Colors.white

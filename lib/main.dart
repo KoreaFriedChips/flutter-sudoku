@@ -25,13 +25,13 @@ extension StringCasingExtension on String {
   String toCapitalized() =>
       length > 0 ? '${this[0].toUpperCase()}${substring(1).toLowerCase()}' : '';
 
-  String toTitleCase() =>
-      replaceAll(RegExp(' +'), ' ').split(' ')
-          .map((str) => str.toCapitalized())
-          .join(' ');
+  String toTitleCase() => replaceAll(RegExp(' +'), ' ')
+      .split(' ')
+      .map((str) => str.toCapitalized())
+      .join(' ');
 }
 
-  class MyApp extends StatelessWidget {
+class MyApp extends StatelessWidget {
   static final String versionNumber = "0.05";
   @override
   Widget build(BuildContext context) {
@@ -501,23 +501,6 @@ class HomePageState extends State<HomePage> {
           return Wrap(
             children: [
               ListTile(
-                leading: Icon(Icons.refresh, color: Styles.foregroundColor),
-                title: Text('Restart Game', style: customStyle),
-                onTap: () {
-                  Navigator.pop(context);
-                  Timer(Duration(milliseconds: 200), () => restartGame());
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.add_rounded, color: Styles.foregroundColor),
-                title: Text('New Game', style: customStyle),
-                onTap: () {
-                  Navigator.pop(context);
-                  Timer(Duration(milliseconds: 200),
-                      () => newGame(currentDifficultyLevel));
-                },
-              ),
-              ListTile(
                 leading: Icon(Icons.lightbulb_outline_rounded,
                     color: Styles.foregroundColor),
                 title: Text('Show Solution', style: customStyle),
@@ -640,295 +623,339 @@ class HomePageState extends State<HomePage> {
         body: Builder(builder: (builder) {
           return Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                // put difficulty, mistake counter and timer up here
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      '$currentDifficultyLevel'.toCapitalized(),
-                      style: TextStyle(
-                        color: currentTheme == 'dark'
-                            ? Colors.white
-                            : Colors.black,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        ElevatedButton.icon(
+                          onPressed: () {
+                            Timer(Duration(milliseconds: 200),
+                                () => newGame(currentDifficultyLevel));
+                          },
+                          icon: Icon(Icons.add_rounded,
+                              color: Styles.foregroundColor),
+                          label: Text('New Game'),
+                          style: ElevatedButton.styleFrom(
+                            primary: Styles.primaryColor,
+                          ),
+                        ),
+                        ElevatedButton.icon(
+                          onPressed: () {
+                            Timer(Duration(milliseconds: 200),
+                                () => restartGame());
+                          },
+                          icon: Icon(Icons.refresh,
+                              color: Styles.foregroundColor),
+                          label: Text('Restart Game'),
+                          style: ElevatedButton.styleFrom(
+                            primary: Styles.primaryColor,
+                          ),
+                        )
+                      ],
                     ),
-                    Text(
-                      "Mistakes: " + '$mistakes' + "/3",
-                      style: TextStyle(
-                        color: currentTheme == 'dark'
-                            ? Colors.white
-                            : Colors.black,
-                      ),
-                    ),
-                    StreamBuilder<int>(
-                        stream: time.rawTime,
-                        initialData: time.rawTime.value,
-                        builder: (context, snap) {
-                          final value = snap.data;
-                          displayTime = StopWatchTimer.getDisplayTime(value,
-                              hours: false, milliSecond: false);
-                          return Text(
-                            displayTime,
-                            style: TextStyle(
-                              color: currentTheme == 'dark'
-                                  ? Colors.white
-                                  : Colors.black,
-                            ),
-                          );
-                        }),
                   ],
                 ),
-                Column(children: createRows()),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Text(
+                          '$currentDifficultyLevel'.toCapitalized(),
+                          style: TextStyle(
+                            color: currentTheme == 'dark'
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                        ),
+                        Text(
+                          "Mistakes: " + '$mistakes' + "/3",
+                          style: TextStyle(
+                            color: currentTheme == 'dark'
+                                ? Colors.white
+                                : Colors.black,
+                          ),
+                        ),
+                        StreamBuilder<int>(
+                            stream: time.rawTime,
+                            initialData: time.rawTime.value,
+                            builder: (context, snap) {
+                              final value = snap.data;
+                              displayTime = StopWatchTimer.getDisplayTime(value,
+                                  hours: false, milliSecond: false);
+                              return Text(
+                                displayTime,
+                                style: TextStyle(
+                                  color: currentTheme == 'dark'
+                                      ? Colors.white
+                                      : Colors.black,
+                                ),
+                              );
+                            }),
+                      ],
+                    ),
+                    Column(children: createRows()),
+                    SizedBox(
+                      height: 20,
+                    ),
+                    Container(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          TextButton(
+                            child: Column(
+                              children: [
+                                Tab(
+                                  icon: Icon(
+                                    Icons.undo_outlined,
+                                    color: Styles.primaryColor,
+                                  ),
+                                  child: Text(
+                                    'Undo',
+                                    style:
+                                        TextStyle(color: Styles.primaryColor),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            onPressed: () {
+                              //print(prvV);
+                              callback(prvX, prvY, prvV, true);
+                            },
+                            style: TextButton.styleFrom(
+                              minimumSize: Size.zero,
+                              padding: EdgeInsets.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                          ),
+                          TextButton(
+                            child: Column(
+                              children: [
+                                Tab(
+                                  icon: Icon(
+                                    MyFlutterApp.eraser,
+                                    color: Styles.primaryColor,
+                                  ),
+                                  child: Text(
+                                    'Erase',
+                                    style:
+                                        TextStyle(color: Styles.primaryColor),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            onPressed: () {
+                              callback(curX, curY, 0, false);
+                              //print(prvV);
+                            },
+                            style: TextButton.styleFrom(
+                              minimumSize: Size.zero,
+                              padding: EdgeInsets.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                          ),
+                          // TextButton(
+                          //   child: Column(
+                          //     children: [
+                          //       Tab(
+                          //         icon: Icon(
+                          //           MyFlutterApp.pencil_neg,
+                          //           color: Styles.primaryColor,
+                          //         ),
+                          //         child: Text(
+                          //           'Notes',
+                          //           style: TextStyle(color: Styles.primaryColor),
+                          //         ),
+                          //       ),
+                          //     ],
+                          //   ),
+                          //   style: TextButton.styleFrom(
+                          //     minimumSize: Size.zero,
+                          //     padding: EdgeInsets.zero,
+                          //     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          //   ),
+                          // ),
+                          TextButton(
+                            child: Column(
+                              children: [
+                                Tab(
+                                  icon: Icon(
+                                    Icons.lightbulb_outline_rounded,
+                                    color: Styles.primaryColor,
+                                  ),
+                                  child: Text(
+                                    'Hint',
+                                    style:
+                                        TextStyle(color: Styles.primaryColor),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            onPressed: () => hintUsed ? null : hint(),
+                            style: TextButton.styleFrom(
+                              minimumSize: Size.zero,
+                              padding: EdgeInsets.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
+                    Container(
+                      // create a row of buttons for 1 - 9
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          TextButton(
+                            child: Text('1',
+                                style: TextStyle(
+                                  color: Styles.primaryColor,
+                                  fontSize: 20,
+                                )),
+                            style: TextButton.styleFrom(
+                              minimumSize: Size.zero,
+                              padding: EdgeInsets.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                            onPressed: () {
+                              callback(curX, curY, 1, false);
+                            },
+                          ),
+                          TextButton(
+                            child: Text('2',
+                                style: TextStyle(
+                                  color: Styles.primaryColor,
+                                  fontSize: 20,
+                                )),
+                            style: TextButton.styleFrom(
+                              minimumSize: Size.zero,
+                              padding: EdgeInsets.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                            onPressed: () {
+                              callback(curX, curY, 2, false);
+                            },
+                          ),
+                          TextButton(
+                            child: Text('3',
+                                style: TextStyle(
+                                  color: Styles.primaryColor,
+                                  fontSize: 20,
+                                )),
+                            style: TextButton.styleFrom(
+                              minimumSize: Size.zero,
+                              padding: EdgeInsets.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                            onPressed: () {
+                              callback(curX, curY, 3, false);
+                            },
+                          ),
+                          TextButton(
+                            child: Text('4',
+                                style: TextStyle(
+                                  color: Styles.primaryColor,
+                                  fontSize: 20,
+                                )),
+                            style: TextButton.styleFrom(
+                              minimumSize: Size.zero,
+                              padding: EdgeInsets.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                            onPressed: () {
+                              callback(curX, curY, 4, false);
+                            },
+                          ),
+                          TextButton(
+                            child: Text('5',
+                                style: TextStyle(
+                                  color: Styles.primaryColor,
+                                  fontSize: 20,
+                                )),
+                            style: TextButton.styleFrom(
+                              minimumSize: Size.zero,
+                              padding: EdgeInsets.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                            onPressed: () {
+                              callback(curX, curY, 5, false);
+                            },
+                          ),
+                          TextButton(
+                            child: Text('6',
+                                style: TextStyle(
+                                  color: Styles.primaryColor,
+                                  fontSize: 20,
+                                )),
+                            style: TextButton.styleFrom(
+                              minimumSize: Size.zero,
+                              padding: EdgeInsets.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                            onPressed: () {
+                              callback(curX, curY, 6, false);
+                            },
+                          ),
+                          TextButton(
+                            child: Text('7',
+                                style: TextStyle(
+                                  color: Styles.primaryColor,
+                                  fontSize: 20,
+                                )),
+                            style: TextButton.styleFrom(
+                              minimumSize: Size.zero,
+                              padding: EdgeInsets.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                            onPressed: () {
+                              callback(curX, curY, 7, false);
+                            },
+                          ),
+                          TextButton(
+                            child: Text('8',
+                                style: TextStyle(
+                                  color: Styles.primaryColor,
+                                  fontSize: 20,
+                                )),
+                            style: TextButton.styleFrom(
+                              minimumSize: Size.zero,
+                              padding: EdgeInsets.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                            onPressed: () {
+                              callback(curX, curY, 8, false);
+                            },
+                          ),
+                          TextButton(
+                            child: Text('9',
+                                style: TextStyle(
+                                  color: Styles.primaryColor,
+                                  fontSize: 20,
+                                )),
+                            style: TextButton.styleFrom(
+                              minimumSize: Size.zero,
+                              padding: EdgeInsets.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                            onPressed: () {
+                              callback(curX, curY, 9, false);
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
                 SizedBox(
                   height: 35,
-                ),
-                Container(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      TextButton(
-                        child: Column(
-                          children: [
-                            Tab(
-                              icon: Icon(
-                                Icons.undo_outlined,
-                                color: Styles.primaryColor,
-                              ),
-                              child: Text(
-                                'Undo',
-                                style: TextStyle(color: Styles.primaryColor),
-                              ),
-                            ),
-                          ],
-                        ),
-                        onPressed: () {
-                          //print(prvV);
-                          callback(prvX, prvY, prvV, true);
-                        },
-                        style: TextButton.styleFrom(
-                          minimumSize: Size.zero,
-                          padding: EdgeInsets.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
-                      ),
-                      TextButton(
-                        child: Column(
-                          children: [
-                            Tab(
-                              icon: Icon(
-                                MyFlutterApp.eraser,
-                                color: Styles.primaryColor,
-                              ),
-                              child: Text(
-                                'Erase',
-                                style: TextStyle(color: Styles.primaryColor),
-                              ),
-                            ),
-                          ],
-                        ),
-                        onPressed: () {
-                          callback(curX, curY, 0, false);
-                          //print(prvV);
-                        },
-                        style: TextButton.styleFrom(
-                          minimumSize: Size.zero,
-                          padding: EdgeInsets.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
-                      ),
-                      // TextButton(
-                      //   child: Column(
-                      //     children: [
-                      //       Tab(
-                      //         icon: Icon(
-                      //           MyFlutterApp.pencil_neg,
-                      //           color: Styles.primaryColor,
-                      //         ),
-                      //         child: Text(
-                      //           'Notes',
-                      //           style: TextStyle(color: Styles.primaryColor),
-                      //         ),
-                      //       ),
-                      //     ],
-                      //   ),
-                      //   style: TextButton.styleFrom(
-                      //     minimumSize: Size.zero,
-                      //     padding: EdgeInsets.zero,
-                      //     tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      //   ),
-                      // ),
-                      TextButton(
-                        child: Column(
-                          children: [
-                            Tab(
-                              icon: Icon(
-                                Icons.lightbulb_outline_rounded,
-                                color: Styles.primaryColor,
-                              ),
-                              child: Text(
-                                'Hint',
-                                style: TextStyle(color: Styles.primaryColor),
-                              ),
-                            ),
-                          ],
-                        ),
-                        onPressed: () => hintUsed ? null : hint(),
-                        style: TextButton.styleFrom(
-                          minimumSize: Size.zero,
-                          padding: EdgeInsets.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-                Container(
-                  // create a row of buttons for 1 - 9
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      TextButton(
-                        child: Text('1',
-                            style: TextStyle(
-                              color: Styles.primaryColor,
-                              fontSize: 20,
-                            )),
-                        style: TextButton.styleFrom(
-                          minimumSize: Size.zero,
-                          padding: EdgeInsets.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
-                        onPressed: () {
-                          callback(curX, curY, 1, false);
-                        },
-                      ),
-                      TextButton(
-                        child: Text('2',
-                            style: TextStyle(
-                              color: Styles.primaryColor,
-                              fontSize: 20,
-                            )),
-                        style: TextButton.styleFrom(
-                          minimumSize: Size.zero,
-                          padding: EdgeInsets.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
-                        onPressed: () {
-                          callback(curX, curY, 2, false);
-                        },
-                      ),
-                      TextButton(
-                        child: Text('3',
-                            style: TextStyle(
-                              color: Styles.primaryColor,
-                              fontSize: 20,
-                            )),
-                        style: TextButton.styleFrom(
-                          minimumSize: Size.zero,
-                          padding: EdgeInsets.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
-                        onPressed: () {
-                          callback(curX, curY, 3, false);
-                        },
-                      ),
-                      TextButton(
-                        child: Text('4',
-                            style: TextStyle(
-                              color: Styles.primaryColor,
-                              fontSize: 20,
-                            )),
-                        style: TextButton.styleFrom(
-                          minimumSize: Size.zero,
-                          padding: EdgeInsets.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
-                        onPressed: () {
-                          callback(curX, curY, 4, false);
-                        },
-                      ),
-                      TextButton(
-                        child: Text('5',
-                            style: TextStyle(
-                              color: Styles.primaryColor,
-                              fontSize: 20,
-                            )),
-                        style: TextButton.styleFrom(
-                          minimumSize: Size.zero,
-                          padding: EdgeInsets.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
-                        onPressed: () {
-                          callback(curX, curY, 5, false);
-                        },
-                      ),
-                      TextButton(
-                        child: Text('6',
-                            style: TextStyle(
-                              color: Styles.primaryColor,
-                              fontSize: 20,
-                            )),
-                        style: TextButton.styleFrom(
-                          minimumSize: Size.zero,
-                          padding: EdgeInsets.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
-                        onPressed: () {
-                          callback(curX, curY, 6, false);
-                        },
-                      ),
-                      TextButton(
-                        child: Text('7',
-                            style: TextStyle(
-                              color: Styles.primaryColor,
-                              fontSize: 20,
-                            )),
-                        style: TextButton.styleFrom(
-                          minimumSize: Size.zero,
-                          padding: EdgeInsets.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
-                        onPressed: () {
-                          callback(curX, curY, 7, false);
-                        },
-                      ),
-                      TextButton(
-                        child: Text('8',
-                            style: TextStyle(
-                              color: Styles.primaryColor,
-                              fontSize: 20,
-                            )),
-                        style: TextButton.styleFrom(
-                          minimumSize: Size.zero,
-                          padding: EdgeInsets.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
-                        onPressed: () {
-                          callback(curX, curY, 8, false);
-                        },
-                      ),
-                      TextButton(
-                        child: Text('9',
-                            style: TextStyle(
-                              color: Styles.primaryColor,
-                              fontSize: 20,
-                            )),
-                        style: TextButton.styleFrom(
-                          minimumSize: Size.zero,
-                          padding: EdgeInsets.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
-                        onPressed: () {
-                          callback(curX, curY, 9, false);
-                        },
-                      ),
-                    ],
-                  ),
                 ),
               ],
             ),

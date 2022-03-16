@@ -21,7 +21,17 @@ void main() {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+extension StringCasingExtension on String {
+  String toCapitalized() =>
+      length > 0 ? '${this[0].toUpperCase()}${substring(1).toLowerCase()}' : '';
+
+  String toTitleCase() =>
+      replaceAll(RegExp(' +'), ' ').split(' ')
+          .map((str) => str.toCapitalized())
+          .join(' ');
+}
+
+  class MyApp extends StatelessWidget {
   static final String versionNumber = "0.05";
   @override
   Widget build(BuildContext context) {
@@ -637,7 +647,7 @@ class HomePageState extends State<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Text(
-                      '$currentDifficultyLevel',
+                      '$currentDifficultyLevel'.toCapitalized(),
                       style: TextStyle(
                         color: currentTheme == 'dark'
                             ? Colors.white

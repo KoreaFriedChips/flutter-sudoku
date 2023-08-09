@@ -13,6 +13,74 @@ import 'my_flutter_app_icons.dart';
 import 'package:stop_watch_timer/stop_watch_timer.dart';
 import 'dart:core';
 
+class BacktrackingAlgorithm {
+  static List<SolutionStep> solve(List<List<int>> puzzle) {
+    List<SolutionStep> solutionSteps = [];
+    // print(puzzle);
+    if (_solveSudoku(puzzle, solutionSteps)) {
+      return solutionSteps;
+    } else {
+      return []; // No solution found
+    }
+  }
+
+  static bool _solveSudoku(
+      List<List<int>> puzzle, List<SolutionStep> solutionSteps) {
+    for (int row = 0; row < 9; row++) {
+      for (int col = 0; col < 9; col++) {
+        if (puzzle[row][col] == 0) {
+          for (int num = 1; num <= 9; num++) {
+            if (_isValidMove(puzzle, row, col, num)) {
+              puzzle[row][col] = num;
+              solutionSteps.add(SolutionStep(row, col, num));
+
+              if (_solveSudoku(puzzle, solutionSteps)) {
+                return true; // Solution found
+              }
+
+              // Backtrack
+              puzzle[row][col] = 0;
+              solutionSteps.removeLast();
+            }
+          }
+
+          return false; // No valid number found, backtrack
+        }
+      }
+    }
+
+    return true; // All cells filled, puzzle solved
+  }
+
+  static bool _isValidMove(List<List<int>> puzzle, int row, int col, int num) {
+    for (int i = 0; i < 9; i++) {
+      if (puzzle[row][i] == num || puzzle[i][col] == num) {
+        return false; // Number already present in row or column
+      }
+    }
+
+    int startRow = row - row % 3;
+    int startCol = col - col % 3;
+    for (int i = 0; i < 3; i++) {
+      for (int j = 0; j < 3; j++) {
+        if (puzzle[startRow + i][startCol + j] == num) {
+          return false; // Number already present in 3x3 subgrid
+        }
+      }
+    }
+
+    return true; // Valid move
+  }
+}
+
+class SolutionStep {
+  final int row;
+  final int col;
+  final int value;
+
+  SolutionStep(this.row, this.col, this.value);
+}
+
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   SystemChrome.setPreferredOrientations(
@@ -258,12 +326,82 @@ class HomePageState extends State<HomePage> {
     setState(() {
       curX = null;
       curY = null;
-      game = SudokuUtilities.copySudoku(gameSolved);
-      isButtonDisabled =
-          !isButtonDisabled ? !isButtonDisabled : isButtonDisabled;
+      isButtonDisabled = true;
       gameOver = true;
     });
     time.onExecute.add(StopWatchExecute.stop);
+
+    solveSudokuAnimated();
+  }
+
+  Future<void> solveSudokuAnimated() async {
+    bool solved = await _animateSolveSudoku(0, 0);
+    if (solved) {
+      print("Sudoku puzzle solved!");
+    } else {
+      print("No solution found for the Sudoku puzzle.");
+    }
+  }
+
+  Future<bool> _animateSolveSudoku(int row, int col) async {
+    if (row == 9) {
+      row = 0;
+      col++;
+      if (col == 9) {
+        // Animation finished
+        return true;
+      }
+    }
+
+    if (game[row][col] != 0) {
+      // Cell is already filled, move to the next cell
+      return await _animateSolveSudoku(row + 1, col);
+    } else {
+      for (int num = 1; num <= 9; num++) {
+        if (isValidMove(row, col, num)) {
+          setState(() {
+            game[row][col] = num; // Update the Sudoku board state
+          });
+
+          // Add an animation delay (adjust the duration as needed)
+          await Future.delayed(Duration(milliseconds: 100));
+
+          bool solved = await _animateSolveSudoku(row + 1, col);
+
+          if (solved) {
+            return true; // Puzzle solved
+          }
+
+          setState(() {
+            game[row][col] = 0; // Backtrack
+          });
+
+          // Add an animation delay (adjust the duration as needed)
+          await Future.delayed(Duration(milliseconds: 100));
+        }
+      }
+    }
+
+    return false; // No solution found
+  }
+
+  bool isValidMove(int row, int col, int num) {
+    for (int i = 0; i < 9; i++) {
+      if (game[row][i] == num || game[i][col] == num) {
+        return false; // Number already present in row or column
+      }
+    }
+
+    // Check if the number already exists in the same 3x3 sub-grid
+    int subgridRow = (row ~/ 3) * 3;
+    int subgridCol = (col ~/ 3) * 3;
+
+    for (int i = 0; i < 3; i++) {
+      for (int j = 0; j < 3; j++) {
+        if (game[subgridRow + i][subgridCol + j] == num) return false;
+      }
+    }
+    return true; // Valid move
   }
 
   void newGame([String difficulty = 'Easy']) {
